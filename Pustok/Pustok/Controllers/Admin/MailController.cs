@@ -12,33 +12,41 @@ namespace Pustok.Controllers.Admin
         [HttpGet]
         public IActionResult Index()
         {
-            return View();
+            return View("Views/Mail/Email.cshtml");
         }
-        [HttpPost]
+
+        [HttpGet("SendEmail",Name = "send-email")]
+        public IActionResult SendEmail()
+        {
+            return View("Views/Mail/SendEmail.cshtml");
+        }
+
+        [HttpPost("SendEmail", Name = "send-email")]
         public IActionResult Index(MailRequest mailRequest) 
         {
             MimeMessage mimeMessage = new MimeMessage();
 
-            MailboxAddress mailboxAddressFrom = new MailboxAddress(mailRequest.Name, mailRequest.SenderMail);
+            MailboxAddress mailboxAddressFrom = new MailboxAddress("Admin","alivs@code.edu.az");
             mimeMessage.From.Add(mailboxAddressFrom);
 
-            MailboxAddress mailboxAddressTo =new MailboxAddress(mailRequest.Name,mailRequest.RecieverMail);
+            MailboxAddress mailboxAddressTo =new MailboxAddress("Admin", mailRequest.RecieverMail);
 
             mimeMessage.To.Add(mailboxAddressTo);
 
-            var bodyBuilder = new BodyBuilder();
-            bodyBuilder.TextBody = mailRequest.Body;
-            mimeMessage.Body = bodyBuilder.ToMessageBody();
+
+            //var bodyBuilder = new BodyBuilder();
+            //bodyBuilder.TextBody = mailRequest.Body;
+            //mimeMessage.Body = bodyBuilder.ToMessageBody();
 
             mimeMessage.Subject = mailRequest.Subject;
 
             SmtpClient client = new SmtpClient();
             client.Connect("smtp.gmail.com", 587, false);
-            client.Authenticate(mailRequest.Name, mailRequest.Password);
+            client.Authenticate("alivs@code.edu.az", "sbiszfzaydccirnz");
             client.Send(mimeMessage);
             client.Disconnect(true);
 
-            return View();
+            return View("Views/Mail/Email.cshtml");
         }
     }
 }
